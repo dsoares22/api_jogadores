@@ -47,37 +47,6 @@ A classificação de desempenho considera a média de gols por partida ($\text{M
 
 ---
 
-## 📁 Estrutura do Projeto
-
-```text
-api_jogadores/
-├── frontend_api_jogadores/          # Projeto Frontend (Vue.js + Vite)
-│   ├── src/
-│   │   ├── services/                # Integração com a API (Axios)
-│   │   ├── views/                   # Telas da aplicação (Home, Form)
-│   │   ├── router/                  # Rotas do Vue Router
-│   │   └── styles/                  # Estilos globais em CSS
-│   ├── package.json
-│   └── vite.config.js
-│
-├── src/                             # Projeto Backend (Java + Spring Boot)
-│   └── main/
-│       ├── java/br/com/atividade/jogadores/
-│       │   ├── controller/          # Endpoints REST
-│       │   ├── model/               # Entidades e DTOs
-│       │   ├── repository/          # Acesso ao banco (Spring JDBC)
-│       │   └── service/             # Regras de negócio e desempenho
-│       └── resources/               # Configurações (application.properties)
-│
-├── sql/                             # Scripts de banco de dados
-│   └── adicionar_numero_camisa.sql
-│
-├── .gitignore
-└── pom.xml                          # Dependências Maven do Backend
-```
-
----
-
 ## 🛠️ Endpoints da API (Backend)
 
 | Método | Endpoint                     | Descrição                                         |
