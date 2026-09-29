@@ -13,7 +13,11 @@
     </p>
   </div>
 
-  <form @submit.prevent="salvarJogadores">
+  <p v-if="carregando" role="status">Carregando jogador...</p>
+  <p v-else-if="erroCarregar" class="form-error" role="alert">
+    {{ erroCarregar }}
+  </p>
+  <form v-else @submit.prevent="salvarJogadores">
     <section
       v-for="(jogador, indice) in jogadoresFormulario"
       :key="jogador.chave"
@@ -50,6 +54,7 @@
           :id="`nome-${jogador.chave}`"
           type="text"
           v-model="jogador.nome"
+          maxlength="100"
           placeholder="Ex.: Davi Silva Soares"
           required
           :disabled="salvando"
@@ -62,6 +67,7 @@
             :id="`posicao-${jogador.chave}`"
             type="text"
             v-model="jogador.posicao"
+            maxlength="50"
             placeholder="Ex.: Atacante"
             required
             :disabled="salvando"
@@ -73,6 +79,7 @@
             :id="`clube-${jogador.chave}`"
             type="text"
             v-model="jogador.clube"
+            maxlength="150"
             placeholder="Ex.: Corinthians"
             :disabled="salvando"
           />
@@ -117,6 +124,7 @@
             :id="`gols-${jogador.chave}`"
             type="number"
             v-model.number="jogador.quantidadeGols"
+            required
             min="0"
             :disabled="salvando"
           />
@@ -127,6 +135,7 @@
             :id="`partidas-${jogador.chave}`"
             type="number"
             v-model.number="jogador.quantidadePartidas"
+            required
             min="0"
             :disabled="salvando"
           />
@@ -140,7 +149,10 @@
             :disabled="salvando"
           /><span
             ><strong>Jogador ativo</strong
-            ><small>Disponível para o elenco principal</small></span
+            ><small
+              >Para ser titular, também precisa ter pelo menos 5
+              partidas.</small
+            ></span
           ></label
         >
       </div>

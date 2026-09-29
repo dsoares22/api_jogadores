@@ -26,6 +26,83 @@
       ><small>Entre os jogadores cadastrados</small>
     </div>
   </div>
+  <section
+    v-if="detalheAberto"
+    class="surface performance-panel"
+    aria-label="Detalhes e desempenho"
+    aria-live="polite"
+    :aria-busy="carregandoDetalhe"
+  >
+    <div class="section-head">
+      <h2>
+        {{ jogadorDetalhe ? jogadorDetalhe.nome : 'Detalhes e desempenho' }}
+      </h2>
+      <button type="button" class="action-link" @click="fecharDetalhe">
+        Fechar
+      </button>
+    </div>
+    <div class="performance-body">
+      <p v-if="carregandoDetalhe" role="status">Consultando desempenho...</p>
+      <p v-else-if="erroDetalhe" role="alert">{{ erroDetalhe }}</p>
+      <template v-else-if="jogadorDetalhe && desempenho">
+        <p>
+          {{ jogadorDetalhe.posicao }} · {{ jogadorDetalhe.clube || 'Sem clube'
+          }} · Camisa {{ jogadorDetalhe.numeroCamisa ?? '—' }} · {{
+          jogadorDetalhe.idade }} anos
+        </p>
+        <p>
+          {{ jogadorDetalhe.quantidadeGols }} gols em {{
+          jogadorDetalhe.quantidadePartidas }} partidas · {{
+          jogadorDetalhe.ativo ? 'Ativo' : 'Inativo' }}
+        </p>
+        <dl class="performance-grid">
+          <div>
+            <dt>Média de gols por partida</dt>
+            <dd>{{ formatarMedia(desempenho.mediaGolsPorPartida) }}</dd>
+          </div>
+          <div>
+            <dt>Classificação</dt>
+            <dd>{{ desempenho.classificacao }}</dd>
+          </div>
+          <div>
+            <dt>Aptidão para titular</dt>
+            <dd>
+              <span v-if="desempenho.aptoParaSerTitular"
+                >Apto para ser titular</span
+              >
+              <span v-else>Não apto para ser titular</span>
+            </dd>
+          </div>
+        </dl>
+        <RouterLink :to="`/editar/${jogadorDetalhe.id}`" class="action-link"
+          >Editar jogador</RouterLink
+        >
+      </template>
+      <section class="performance-rules" aria-label="Como interpretar o desempenho">
+        <h3>Como interpretar o desempenho</h3>
+        <div class="rules-grid">
+          <div>
+            <h4>Quando o jogador está apto para ser titular?</h4>
+            <p>Ele precisa cumprir as duas condições: estar <strong>ativo</strong> e ter disputado <strong>pelo menos 5 partidas</strong>.</p>
+            <p>Se estiver inativo ou tiver menos de 5 partidas, será considerado não apto. A quantidade de gols não interfere nessa regra.</p>
+          </div>
+          <div>
+            <h4>Como a média de gols é calculada?</h4>
+            <p>Dividimos o total de gols pelo total de partidas. A média indica quantos gols o jogador marca por partida, em média.</p>
+            <p class="rules-example"><strong>Exemplo:</strong> 3 gols em 10 partidas = <strong>0,30 gol por partida</strong>. Nesse caso, o desempenho é classificado como Bom.</p>
+          </div>
+        </div>
+        <h4>O que significa cada classificação?</h4>
+        <ul class="classification-list">
+          <li><strong>Excelente:</strong> média de 0,50 ou mais — pelo menos 1 gol a cada 2 partidas, em média.</li>
+          <li><strong>Bom:</strong> média a partir de 0,20 e abaixo de 0,50 — pelo menos 1 gol a cada 5 partidas, mas menos de 1 a cada 2.</li>
+          <li><strong>Regular:</strong> média abaixo de 0,20 — menos de 1 gol a cada 5 partidas, em média.</li>
+          <li><strong>Sem partidas suficientes:</strong> o jogador ainda não disputou nenhuma partida, por isso não há jogos para avaliar sua média.</li>
+        </ul>
+        <p>A classificação usa a média completa do cálculo. O valor exibido acima é arredondado para duas casas decimais.</p>
+      </section>
+    </div>
+  </section>
   <section class="surface roster-section">
     <div class="section-head">
       <div>
@@ -101,6 +178,13 @@
       >
     </div>
 
+    <div v-else-if="carregandoAtivos" class="empty-state" role="status">
+      <p>Consultando jogadores ativos...</p>
+    </div>
+    <div v-else-if="erroAtivos" class="empty-state" role="alert">
+      <h3>Não foi possível consultar os ativos</h3>
+      <p>{{ erroAtivos }}</p>
+    </div>
     <div
       v-else-if="filtroStatus === 'clubes' && !clubeSelecionado"
       class="empty-state"
@@ -166,6 +250,13 @@
             </td>
             <td>
               <div class="acoes-botoes">
+                <button
+                  type="button"
+                  class="action-link"
+                  @click="consultarDesempenho(jogador.id)"
+                >
+                  Desempenho
+                </button>
                 <RouterLink :to="`/editar/${jogador.id}`" class="action-link"
                   >Editar</RouterLink
                 >
