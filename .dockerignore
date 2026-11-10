@@ -1,0 +1,8 @@
+target
+.idea
+.git
+.DS_Store
+frontend_api_jogadores*
+docker
+src/main/resources/application-local.properties
+src/main/resources/application-dev.properties
